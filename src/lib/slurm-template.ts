@@ -24,6 +24,10 @@ export const defaultSlurmConfig: SlurmConfig = {
 
 const commandPaths: Record<string, string> = {
   omega3p: "/global/cfs/cdirs/ace3p/perlmutter/omega3p",
+  s3p: "/global/cfs/cdirs/ace3p/perlmutter/s3p",
+  track3p: "/global/cfs/cdirs/ace3p/perlmutter/track3p",
+  t3p: "/global/cfs/cdirs/ace3p/perlmutter/t3p",
+  tem3p: "/global/cfs/cdirs/ace3p/perlmutter/tem3p",
   "acdtool meshconvert": "/global/cfs/cdirs/ace3p/perlmutter/acdtool meshconvert",
   "acdtool postprocess rf": "/global/cfs/cdirs/ace3p/perlmutter/acdtool postprocess rf",
 };

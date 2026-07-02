@@ -138,6 +138,10 @@ export default function SlurmForm() {
                 className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
               >
                 <option value="omega3p">omega3p</option>
+                <option value="s3p">s3p</option>
+                <option value="track3p">track3p</option>
+                <option value="t3p">t3p</option>
+                <option value="tem3p">tem3p</option>
                 <option value="acdtool meshconvert">
                   acdtool meshconvert
                 </option>
