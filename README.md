@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ACE3P Workflow Dashboard
 
-## Getting Started
+A Next.js web application that documents and generates input files for the ACE3P parallel electromagnetic simulation suite, targeting NERSC Perlmutter.
 
-First, run the development server:
+## What We Built
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+An interactive dashboard that helps users:
+- Learn the ACE3P simulation workflow (geometry, meshing, solving, post-processing)
+- Generate valid input files for each solver module via interactive forms
+- Download Perlmutter Slurm job scripts ready for submission
+
+## Architecture
+
+- **Framework:** Next.js 15 (App Router) + React 18 + TypeScript + Tailwind CSS
+- **Hosting:** Runs on SDF (`sdfiana005`), accessed via SSH tunnel
+- **No backend needed** — all form logic runs client-side in the browser
+
+## Features
+
+| Module | What it generates |
+|--------|-------------------|
+| **Omega3P** | `.omega3p` eigenmode input, `.rfpost` post-process, Slurm scripts |
+| **S3P** | `.s3p` S-parameter input (frequency scan, multi-port) |
+| **Track3P** | `.track3p` multipacting/dark current input |
+| **T3P** | `.t3p` time-domain wakefield input |
+| **TEM3P** | `.tem3p` coupled thermal-structural input |
+
+Each module has:
+- **Overview page** — capabilities and description
+- **Input Generator** — interactive form with live preview + download button
+- **Omega3P also has:** workflow guide (step-by-step tutorial), Slurm script generator, post-process file generator
+
+## File Structure
+
+```
+src/
+├── app/              Pages (14 routes total)
+│   ├── page.tsx      Home with workflow diagram
+│   ├── omega3p/      5 pages (overview, workflow, input, slurm, postprocess)
+│   ├── s3p/          2 pages (overview, input generator)
+│   ├── track3p/      2 pages
+│   ├── t3p/          2 pages
+│   └── tem3p/        2 pages
+├── components/       11 React components (forms, nav, code viewer, download)
+└── lib/              7 template generators (pure functions: config → text)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How Users Use It
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Open `http://localhost:3000` via SSH tunnel from laptop
+2. Navigate to the desired solver module
+3. Fill out the form (boundary conditions, solver parameters, etc.)
+4. Download the generated file
+5. Transfer to Perlmutter and submit with `sbatch`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Key Decisions
 
-## Learn More
+- **No Vercel/StackBlitz** — kept internal on SDF for security (no SLAC data exposed to third parties)
+- **Client-side only** — no server API needed, forms generate text files in-browser
+- **Real ACE3P syntax** — all templates derived from actual example files in `/sdf/data/rfar/nfs/acd/u01/userspace/cho/cw23/`
+- **Perlmutter format** — Slurm scripts use current NERSC conventions (not legacy Edison)
 
-To learn more about Next.js, take a look at the following resources:
+## Running It
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+# On SDF:
+cd /sdf/group/rfar/lge/sdf/webdev/ace3p-dashboard
+npm run dev -- -p 3000
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# From laptop:
+ssh -L 3000:sdfiana005:3000 lge@sdflogin.slac.stanford.edu
+# Then open http://localhost:3000
+```
 
-## Deploy on Vercel
+## Development
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+# Install dependencies
+npm install
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+# Run dev server
+npm run dev
+
+# Production build
+npm run build
+npm start
+```
