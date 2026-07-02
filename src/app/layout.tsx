@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Navigation from "@/components/Navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,7 +15,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "ACE3P Workflow Dashboard",
-  description: "Dashboard for managing ACE3P simulation workflows",
+  description:
+    "Dashboard for managing ACE3P simulation workflows on Perlmutter",
 };
 
 export default function RootLayout({
@@ -27,7 +29,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex">
+        <Navigation />
+        <main className="flex-1 overflow-auto">{children}</main>
+      </body>
     </html>
   );
 }

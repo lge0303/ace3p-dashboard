@@ -1,64 +1,103 @@
-"use client";
+import WorkflowDiagram from "@/components/WorkflowDiagram";
+import Link from "next/link";
 
-import { useState } from "react";
-import SimulationForm from "@/components/SimulationForm";
-import JobStatusTable from "@/components/JobStatusTable";
-import PerformanceChart from "@/components/PerformanceChart";
-
-interface Job {
-  name: string;
-  solver: string;
-  status: string;
-  runtime: string;
-}
-
-const initialJobs: Job[] = [
-  { name: "cavity_eigen_001", solver: "Omega3P", status: "Completed", runtime: "45 min" },
-  { name: "wakefield_sim_014", solver: "Track3P", status: "Running", runtime: "23 min" },
-  { name: "sband_coupler_007", solver: "S3P", status: "Completed", runtime: "67 min" },
-  { name: "thermal_analysis_003", solver: "T3P", status: "Queued", runtime: "—" },
-  { name: "rf_cavity_opt_022", solver: "Omega3P", status: "Failed", runtime: "12 min" },
-];
-
-export default function DashboardPage() {
-  const [jobs, setJobs] = useState<Job[]>(initialJobs);
-
-  function handleJobSubmit(newJob: Job) {
-    setJobs((prev) => [newJob, ...prev]);
-  }
-
+export default function HomePage() {
   return (
-    <main className="max-w-7xl mx-auto px-6 py-8">
+    <div className="p-8 max-w-6xl">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">
           ACE3P Workflow Dashboard
         </h1>
-        <p className="text-gray-500 mt-1">
-          Manage and monitor parallel electromagnetic simulations
+        <p className="text-gray-500 mt-2">
+          Parallel electromagnetic simulation suite for accelerator cavity
+          design. Generate input files, Slurm scripts, and post-processing
+          configurations for NERSC Perlmutter.
         </p>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left column: Simulation Input Form */}
-        <section className="lg:col-span-1 bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">Submit Simulation</h2>
-          <SimulationForm onSubmit={handleJobSubmit} />
-        </section>
-
-        {/* Right column: Job Status Table */}
-        <section className="lg:col-span-2 bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-          <h2 className="text-lg font-semibold mb-4">Job Status</h2>
-          <JobStatusTable jobs={jobs} />
-        </section>
-      </div>
-
-      {/* Full-width: Performance Chart */}
-      <section className="mt-6 bg-white rounded-lg border border-gray-200 p-6 shadow-sm">
-        <h2 className="text-lg font-semibold mb-4">
-          Performance: Runtime vs. Node Count
-        </h2>
-        <PerformanceChart />
+      <section className="mb-10">
+        <h2 className="text-xl font-semibold mb-4">Simulation Workflow</h2>
+        <WorkflowDiagram />
       </section>
-    </main>
+
+      <section className="mb-10">
+        <h2 className="text-xl font-semibold mb-4">Available Modules</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Link
+            href="/omega3p"
+            className="block p-6 bg-white border border-gray-200 rounded-lg shadow-sm hover:border-blue-300 hover:shadow-md transition-all"
+          >
+            <h3 className="text-lg font-semibold text-blue-700">Omega3P</h3>
+            <p className="text-sm text-gray-600 mt-2">
+              Eigenmode solver for RF cavities. Computes resonant frequencies,
+              quality factors, and field distributions using higher-order finite
+              elements.
+            </p>
+            <ul className="text-xs text-gray-500 mt-3 space-y-1">
+              <li>- Real eigenvalues (lossless cavities)</li>
+              <li>- Complex eigenvalues (open ports, lossy materials)</li>
+              <li>- Periodic structures (dispersion curves)</li>
+            </ul>
+          </Link>
+
+          <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg opacity-60">
+            <h3 className="text-lg font-semibold text-gray-500">
+              Track3P, S3P, T3P, TEM3P
+            </h3>
+            <p className="text-sm text-gray-400 mt-2">
+              Additional modules coming soon: particle tracking, S-parameter,
+              transient, and thermal analysis.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-xl font-semibold mb-4">Quick Start</h2>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <ol className="space-y-3 text-sm text-gray-700">
+            <li>
+              <strong>1.</strong> Build geometry and mesh in{" "}
+              <span className="font-mono text-blue-700">Cubit</span> (export as
+              .gen file)
+            </li>
+            <li>
+              <strong>2.</strong> Use the{" "}
+              <Link
+                href="/omega3p/slurm-generator"
+                className="text-blue-600 underline"
+              >
+                Slurm Generator
+              </Link>{" "}
+              to create a mesh conversion job script
+            </li>
+            <li>
+              <strong>3.</strong> Use the{" "}
+              <Link
+                href="/omega3p/input-generator"
+                className="text-blue-600 underline"
+              >
+                Input Generator
+              </Link>{" "}
+              to create your .omega3p input file
+            </li>
+            <li>
+              <strong>4.</strong> Submit jobs to Perlmutter with{" "}
+              <code className="bg-gray-100 px-1 rounded">sbatch</code>
+            </li>
+            <li>
+              <strong>5.</strong> Use the{" "}
+              <Link
+                href="/omega3p/postprocess"
+                className="text-blue-600 underline"
+              >
+                Post-process Generator
+              </Link>{" "}
+              to extract RF parameters (R/Q, fields, etc.)
+            </li>
+          </ol>
+        </div>
+      </section>
+    </div>
   );
 }
