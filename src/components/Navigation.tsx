@@ -14,6 +14,13 @@ const navSections: NavSection[] = [
     items: [{ href: "/", label: "Overview" }],
   },
   {
+    title: "Workflows",
+    items: [
+      { href: "/workflow/status", label: "Monitor" },
+      { href: "/workflow/generate", label: "AI Generator" },
+    ],
+  },
+  {
     title: "Omega3P",
     items: [
       { href: "/omega3p", label: "Overview" },
